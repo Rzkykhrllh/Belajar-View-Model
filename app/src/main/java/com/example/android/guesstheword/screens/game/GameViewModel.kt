@@ -20,6 +20,13 @@ class GameViewModel : ViewModel() {
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
 
+    //buat ngasih tau gameFragment kalau daftar kata sudah habis
+    val _isGameFinish = MutableLiveData<Boolean>()
+    val isGameFinish : LiveData<Boolean>
+        get() = _isGameFinish
+
+
+
     init {
         Log.i("GameViewModel", "GameViewModel Created")
         resetList()
@@ -71,7 +78,7 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-            //gameFinished()
+            _isGameFinish.value = true
         } else {
             _word.value = wordList.removeAt(0)
         }
@@ -87,4 +94,6 @@ class GameViewModel : ViewModel() {
         _score.value = score.value?.plus(1)
         nextWord()
     }
+
+
 }

@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -62,16 +63,23 @@ class GameFragment : Fragment() {
             viewModel.onSkip()
         }
 
+        //observeer buat update score
         viewModel.score.observe(viewLifecycleOwner, Observer {
             binding.wordText.text = viewModel.word.value
         })
 
+        //observeer buat update score
         viewModel.word.observe(viewLifecycleOwner, Observer {
             binding.scoreText.text = viewModel.score.value.toString()
         })
 
-//        updateScoreText()
-//        updateWordText()
+        //observeer buat game selesai
+        viewModel.isGameFinish.observe(viewLifecycleOwner, Observer {
+            if (it==true){
+                gameFinished()
+            }
+        })
+
         return binding.root
 
     }
@@ -82,15 +90,7 @@ class GameFragment : Fragment() {
     private fun gameFinished() {
         val action = GameFragmentDirections.actionGameToScore(viewModel.score.value!!)
         findNavController(this).navigate(action)
+//        Toast.makeText(this.activity, "GameFinish", Toast.LENGTH_SHORT).show()
     }
 
-    /** Methods for updating the UI **/
-
-//    private fun updateWordText() {
-//
-//    }
-
-//    private fun updateScoreText() {
-//        binding.scoreText.text = viewModel.score.value.toString()
-//    }
 }
