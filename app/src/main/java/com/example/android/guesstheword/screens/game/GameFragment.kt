@@ -57,23 +57,30 @@ class GameFragment : Fragment() {
         Log.i("GameViewModel", "GameViewModel Called")
         viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java) //manggil gameViewModel
 
-        binding.correctButton.setOnClickListener {
+        //true power of databinding
+        binding.gameViewModel = viewModel //Asign viewModel ke variabel gameViewModelnya layout
+        binding.lifecycleOwner = this //jadi layout bisa observing viewmodel
+
+
+        //tidak diperlukan lagi, karena layout-viewmodel sudah berinteraksi langsung
+        /**binding.correctButton.setOnClickListener {
             viewModel.onCorrect()
         }
 
         binding.skipButton.setOnClickListener {
             viewModel.onSkip()
-        }
+        }*/
 
         //observeer buat update score
-        viewModel.score.observe(viewLifecycleOwner, Observer {
+        //tidak diperlukan lagi, karena layout-viewmodel sudah berinteraksi langsung
+        /**viewModel.score.observe(viewLifecycleOwner, Observer {
             binding.wordText.text = viewModel.word.value
         })
 
         //observeer buat update score
         viewModel.word.observe(viewLifecycleOwner, Observer {
             binding.scoreText.text = viewModel.score.value.toString()
-        })
+        })*/
 
         //observeer buat game selesai
         viewModel.isGameFinish.observe(viewLifecycleOwner, Observer {
