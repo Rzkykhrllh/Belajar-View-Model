@@ -1,5 +1,7 @@
 package com.example.android.guesstheword.screens.game
 
+import android.os.CountDownTimer
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +27,24 @@ class GameViewModel : ViewModel() {
     val isGameFinish : LiveData<Boolean>
         get() = _isGameFinish
 
+    //init konstanta timer
+    companion object {
+        // These represent different important times
+        // This is when the game is over
+        const val DONE = 0L
+        // This is the number of milliseconds in a second
+        const val ONE_SECOND = 1000L
+        // This is the total time of the game
+        const val COUNTDOWN_TIME = 5000L
+    }
 
+    //init timer
+    private lateinit var timer: CountDownTimer
+
+    //init variabel waktu sekarang
+    val _currentTimer = MutableLiveData<String>()
+    val currentTimer : LiveData<String>
+        get() = _currentTimer
 
     init {
         Log.i("GameViewModel", "GameViewModel Created")
@@ -37,10 +56,26 @@ class GameViewModel : ViewModel() {
 
         nextWord()
 
+        //init objek timernya
+        timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
+            //parameternya 2, banyak waktu, sama waktu tiap kliknya
+
+            override fun onTick(millisUntilFinished: Long) {
+                _currentTimer.value = DateUtils.formatElapsedTime(millisUntilFinished).toString()
+            }
+
+            override fun onFinish() {
+                _isGameFinish.value = true
+            }
+        }
+
+        timer.start()
+
     }
 
     override fun onCleared() {
         super.onCleared()
+        timer.cancel() //mematikan timer saat GameViewModel tidak digunakan lagi
         Log.i("GameViewModel", "GameViewModel Destroyed")
     }
 
@@ -78,10 +113,9 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-            _isGameFinish.value = true
-        } else {
-            _word.value = wordList.removeAt(0)
+            resetList()
         }
+        _word.value = wordList.removeAt(0)
     }
 
     /** Methods for buttons presses **/

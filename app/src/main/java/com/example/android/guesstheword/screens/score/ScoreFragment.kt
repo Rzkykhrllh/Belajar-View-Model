@@ -22,15 +22,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.ScoreFragmentBinding
+import com.example.android.guesstheword.screens.game.GameViewModel
 
 /**
  * Fragment where the final score is shown, after the game is over
  */
 class ScoreFragment : Fragment() {
+
+    //init variabel
+    private lateinit var viewModelFactory: ScoreViewModelFactory
+    private lateinit var viewModel: ScoreViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -47,8 +55,20 @@ class ScoreFragment : Fragment() {
         )
 
         // Get args using by navArgs property delegate
-        val scoreFragmentArgs by navArgs<ScoreFragmentArgs>()
-        binding.scoreText.text = scoreFragmentArgs.score.toString()
+        val scoreFragmentArgs by navArgs<ScoreFragmentArgs>() //ambil data dari fragment sebelumnya
+
+        //inint VMFactory
+        viewModelFactory = ScoreViewModelFactory(scoreFragmentArgs.score) //yang dalam kurung itu data yang mau dikirimkan ke viewmodel
+
+        //init ViewModel
+        viewModel = ViewModelProviders.of(this, viewModelFactory) //ada tambahan argument ke-2, yaitu factoryna
+                .get(ScoreViewModel::class.java)
+
+        //observer final score
+        viewModel.Score.observe(viewLifecycleOwner, Observer {
+            binding.scoreText.text = it.toString()
+        })
+
         binding.playAgainButton.setOnClickListener { onPlayAgain() }
 
         return binding.root
